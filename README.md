@@ -1,12 +1,11 @@
 # genebox-mini-request
-genebox-mini-request 是一个基于JS Decorator 和 Taro 实现的网络请求库，专注于实现对网络请求的使用优化
 
 genebox-mini-request 基于 JS Decorator（AOP）和 Taro 实现的网络请求封装，建立于 Taro 网络请求基础上，对使用方式做了进一步优化。
 
-##### 背景
+#### 背景
 当前小程序端网络请求模块使用 request utils 统一处理，通过配置请求模块，动态生成 request task，并通过该实例发起请求。额外的 options 配置参数需要单独传入高阶函数，目前仅支持header，超时时长配置。
 
-##### 存在的问题：
+#### 存在的问题：
 
 ```xml
   请求参数配置存在一定局限性，不易扩展
@@ -17,7 +16,7 @@ genebox-mini-request 基于 JS Decorator（AOP）和 Taro 实现的网络请求�
   请求模块代码耦合较重，扩展代码容易增加测试风险
 ```
 
-#####  优化方案
+####  优化方案
 借鉴 Android Retrofit 的架构实现思想，结合 Mobx，使用 AOP + Decoration 方式对整个请求流程进行优化。
 
 优势：
@@ -33,27 +32,27 @@ genebox-mini-request 基于 JS Decorator（AOP）和 Taro 实现的网络请求�
   抽象响应体，保持对外接口数据一致性
 ```
 
-##### 核心实现
+#### 核心实现
 
-RequestFactory
+##### RequestFactory
 负责初始化配置，例如BaseURL，超时时长等，该类提供基础配置并分配到具体使用，数据由 RequestBuilder 提供。
 
-RequestBuilder
+##### RequestBuilder
 请求配置类，使用建造者模式实现。负责构建请求参数配置，例如BaseURL，超时时长等，并将配置提供给 RequestFactory 。
 
-RequestConfig
+##### RequestConfig
 AOP 实现，提供多种请求配置，例如 Header、Timeout、BaseUrl 等接口。
 
-RequestTask
+##### RequestTask
 对 Taro Request 的封装，接收来自 RequestTaskService 层传递的 配置参数，并注册给Taro Request，并对外提供Promise实现。
  
-RequestTaskService
+##### RequestTaskService
 Taro Request 的服务层，接收来自 RequestType 的基础配置参数，并对参数进行整合处理，生成Taro Request 对应的 Config 参数配置
 
-RequestType
+##### RequestType
 AOP 实现，提供多种请求方式选择，例如 GET、POST、PUT 等。对并将请求方式中声明的参数与请求方式 method 进行处理，生成 「 { url, method, params } 」结构， 传递到 RequestTaskService 层
 
-##### 功能支持
+#### 功能支持
 
 ```xml
   请求方式
@@ -69,7 +68,7 @@ AOP 实现，提供多种请求方式选择，例如 GET、POST、PUT 等。对�
   请求响应返回值类型
 ```
 
-##### 使用方式
+#### 使用方式
 
 初始化配置
 
