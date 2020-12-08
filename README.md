@@ -139,10 +139,7 @@ AOP 实现，提供多种请求方式选择，例如 GET、POST、PUT 等。对�
 ```
 
 TODO  
-
-中断请求
-生命周期
-LoadingManager
+```xml
 数据缓存 @ApiCache
-...
+```
 
