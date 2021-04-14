@@ -20,20 +20,21 @@ const RequestTaskService = (args: RequestArgs) => (target, p, descriptor) => {
   let config: RequestConfig = {};
   const baseUrl: string = metaFunc.baseUrl || RequestFactory.instance?.getBaseUrl();
 
-  descriptor.value = function (...metaArgs: any): void {
-    const _target = this;
-    const { url, params } = MergeParams(args, metaArgs);
-    // 请求地址
-    config.url = `${baseUrl}${url}`;
-    // 请求方式
-    config.method = args.method;
-    // 请求头
-    config.header = {
-      ...RequestFactory.instance?.getHeaders(),
-      ...(metaFunc.headers || descriptor.value.headers)
-    };
-    // 请求参数
-    config.data = params;
+  descriptor.value = function (...metaArgs: any): Promise<any> {
+    return new Promise((resolve, reject) => {
+      const _target = this;
+      const { url, params } = MergeParams(args, metaArgs);
+      // 请求地址
+      config.url = `${baseUrl}${url}`;
+      // 请求方式
+      config.method = args.method;
+      // 请求头
+      config.header = {
+        ...RequestFactory.instance?.getHeaders(),
+        ...(metaFunc.headers || descriptor.value.headers)
+      };
+      // 请求参数
+      config.data = params;
 
     // 请求Loading
     config.showLoading = metaFunc.showLoading ?? RequestFactory.instance?.getShowLoading();
@@ -49,12 +50,17 @@ const RequestTaskService = (args: RequestArgs) => (target, p, descriptor) => {
     if (process.env.NODE_ENV === 'development' && mock) {
       // mock
       metaFunc.call(_target, {});
+      resolve({})
     } else {
       // 发起请求，将结果作为参数回传给原方法
       RequestTask(config).then((res) => {
-        metaFunc.call(_target, res);
+        const transformResponse = RequestFactory.instance?.getTransformResponseFn();
+        const result = transformResponse ? transformResponse(res) : res;
+        metaFunc.call(_target, result);
+        resolve(res);
       }).catch((err) => {
         metaFunc.call(_target, {}, err);
+        reject(err);
       });
     }
   }

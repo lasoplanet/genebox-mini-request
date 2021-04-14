@@ -5,7 +5,7 @@
 import Taro from '@tarojs/taro';
 import { RequestConfig } from '../@types';
 import LoadingManager from '../loading';
-import { ResponseBody, ResponseCode } from '../response';
+import { ResponseTimeoutBody, ResponseCode } from '../response';
 import RequestTaskManager from './RequestTaskManager';
 
 const RequestTask = (config: RequestConfig) => {
@@ -27,8 +27,7 @@ const RequestTask = (config: RequestConfig) => {
           LoadingManager.hide();
         }
         RequestTaskManager.popRequest({ url: config.url! });
-        const { status, msg, data } = res;
-        resolve(new ResponseBody(status, msg, data))
+        resolve(res)
       },
       fail: (err) => {
         if (config.showLoading) {
@@ -53,7 +52,7 @@ const RequestTask = (config: RequestConfig) => {
         }
         requestTask.abort();
         RequestTaskManager.popRequest({ url: config.url! });
-        resolve(new ResponseBody(ResponseCode.TIMEOUT, "网络请求超时", {}));
+        resolve(new ResponseTimeoutBody(ResponseCode.TIMEOUT, "网络请求超时", {}));
       }, config.timeout)
     }
   });

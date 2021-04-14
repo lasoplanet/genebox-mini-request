@@ -13,12 +13,14 @@ export default class RequestFactory {
   private timeOut: number;
   private loading: boolean;
   private headers: {[key: string]: any};
+  private transformResponseFn: Function;
 
-  constructor(baseurl, timeout, headers, loading) { 
+  constructor(baseurl, timeout, headers, loading, transformResponseFn) { 
     this.baseUrl = baseurl;
     this.timeOut = timeout;
     this.headers = headers;
     this.loading = loading;
+    this.transformResponseFn = transformResponseFn;
   };
 
   public setBaseUrl(bUrl: string): void {
@@ -31,6 +33,10 @@ export default class RequestFactory {
 
   public setHeaders(headers: {[key: string]: any}): void {
     this.headers = headers;
+  }
+
+  public setTransformResponse(transformReponseFn: Function): void {
+    this.transformResponseFn = transformReponseFn;
   }
 
   public setEnableLoading(enable: boolean): void {
@@ -47,6 +53,10 @@ export default class RequestFactory {
 
   public getHeaders(): {[key: string]: any} {
     return this.headers;
+  }
+
+  public getTransformResponseFn() : Function {
+    return this.transformResponseFn;
   }
 
   public getShowLoading(): boolean {
@@ -66,6 +76,7 @@ export class RequestBuilder {
   private timeout: number = 6000;
   private showLoading: boolean = true;
   private header: {[key: string]: any} = {};
+  private transformResponseFn: Function | undefined = undefined;
 
   baseUrl(url: string): RequestBuilder {
     this.baseurl = url;
@@ -106,12 +117,18 @@ export class RequestBuilder {
     return this;
   }
 
+  transformResponse(res) : RequestBuilder {
+    this.transformResponseFn = res;
+    return this;
+  }
+
   build = (): RequestFactory => {
     const factory = new RequestFactory(
       this.baseurl,
       this.timeout,
       this.header,
-      this.showLoading
+      this.showLoading,
+      this.transformResponseFn
     );
     RequestFactory.instance = factory;
 
