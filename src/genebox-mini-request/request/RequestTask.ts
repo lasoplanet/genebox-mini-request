@@ -5,7 +5,7 @@
 import Taro from '@tarojs/taro';
 import { RequestConfig } from '../@types';
 import LoadingManager from '../loading';
-import { ResponseTimeoutBody, ResponseCode } from '../response';
+import { Body, ResponseTimeoutBody, ResponseCode } from '../response';
 import RequestTaskManager from './RequestTaskManager';
 
 const RequestTask = (config: RequestConfig) => {
@@ -13,6 +13,7 @@ const RequestTask = (config: RequestConfig) => {
     if (config.showLoading) {
       LoadingManager.show();
     }
+    let abortTimer: undefined | number = undefined;
     const requestTask = Taro.request({
       url: config.url!,
       data: config.data,
@@ -26,6 +27,7 @@ const RequestTask = (config: RequestConfig) => {
         if (config.showLoading) {
           LoadingManager.hide();
         }
+        abortTimer && clearTimeout(abortTimer);
         RequestTaskManager.popRequest({ url: config.url! });
         resolve(res)
       },
@@ -33,6 +35,7 @@ const RequestTask = (config: RequestConfig) => {
         if (config.showLoading) {
           LoadingManager.hide();
         }
+        abortTimer && clearTimeout(abortTimer);
         RequestTaskManager.popRequest({ url: config.url! });
         reject(err)
       }
@@ -45,14 +48,14 @@ const RequestTask = (config: RequestConfig) => {
       typeof config.timeout === 'number' &&
       config.timeout > 1000
     ) {
-      const abortTimer = setTimeout(() => {
+      abortTimer = setTimeout(() => {
         clearTimeout(abortTimer);
         if (config.showLoading) {
           LoadingManager.hide();
         }
         requestTask.abort();
         RequestTaskManager.popRequest({ url: config.url! });
-        resolve(new ResponseTimeoutBody(ResponseCode.TIMEOUT, "网络请求超时", {}));
+        resolve(new ResponseTimeoutBody(new Body(ResponseCode.TIMEOUT, "网络请求超时", {})));
       }, config.timeout)
     }
   });
