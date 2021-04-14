@@ -57,13 +57,14 @@ const RequestTaskService = (args: RequestArgs) => (target, p, descriptor) => {
         const transformResponse = RequestFactory.instance?.getTransformResponseFn();
         const result = transformResponse ? transformResponse(res) : res;
         metaFunc.call(_target, result);
-        resolve(res);
+        resolve(result);
       }).catch((err) => {
         metaFunc.call(_target, {}, err);
         reject(err);
       });
     }
-  }
+  })
+}
 }
 
 export default RequestTaskService;
