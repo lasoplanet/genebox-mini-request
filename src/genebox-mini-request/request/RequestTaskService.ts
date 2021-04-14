@@ -20,7 +20,8 @@ const RequestTaskService = (args: RequestArgs) => (target, p, descriptor) => {
   let config: RequestConfig = {};
   const baseUrl: string = metaFunc.baseUrl || RequestFactory.instance?.getBaseUrl();
 
-  descriptor.value = (...metaArgs: any): void => {
+  descriptor.value = function (...metaArgs: any): void {
+    const _target = this;
     const { url, params } = MergeParams(args, metaArgs);
     // 请求地址
     config.url = `${baseUrl}${url}`;
@@ -47,13 +48,13 @@ const RequestTaskService = (args: RequestArgs) => (target, p, descriptor) => {
     // 是否开启 mock
     if (process.env.NODE_ENV === 'development' && mock) {
       // mock
-      metaFunc.apply(target, {});
+      metaFunc.call(_target, {});
     } else {
       // 发起请求，将结果作为参数回传给原方法
       RequestTask(config).then((res) => {
-        metaFunc.apply(target, res);
+        metaFunc.call(_target, res);
       }).catch((err) => {
-        metaFunc.apply(target, {}, err);
+        metaFunc.call(_target, {}, err);
       });
     }
   }
