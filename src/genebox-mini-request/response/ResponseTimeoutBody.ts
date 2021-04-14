@@ -3,15 +3,20 @@
  * @class ResponseTimeoutBody
  */
 class ResponseTimeoutBody {
-  data: {
-    status: number;
-    msg: string;
-    data: any;
+  data: Body;
+  constructor(body: Body) {
+    this.data = body;
   }
+}
+
+export class Body {
+  status: number;
+  msg: string;
+  data: any;
   constructor(status: number, msg: string, data: any) {
-    this.data.status = status;
-    this.data.msg = msg;
-    this.data.data = data;
+    this.status = status;
+    this.msg = msg;
+    this.data = data;
   }
 }
 
