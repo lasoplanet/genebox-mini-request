@@ -67,7 +67,7 @@ const ResponseType = (resType: string) => (target, p, descriptor): void => {
 // 显示请求 Loading
 const Loading = (enableLoging: boolean) => (target, p, descriptor): void => {
   if (descriptor) {
-    descriptor.value.showLoading = true;
+    descriptor.value.showLoading = enableLoging ?? true;
   }
 }
 
