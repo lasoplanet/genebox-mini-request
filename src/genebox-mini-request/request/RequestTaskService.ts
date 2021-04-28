@@ -37,7 +37,7 @@ const RequestTaskService = (args: RequestArgs) => (target, p, descriptor) => {
       config.data = params;
 
     // 请求Loading
-    config.showLoading = metaFunc.showLoading ?? RequestFactory.instance?.getShowLoading();
+    config.showLoading = (metaFunc.showLoading || descriptor.value.showLoading) ?? RequestFactory.instance?.getShowLoading();
     // 超时时长
     config.timeout = (metaFunc.timeout || descriptor.value.timeout) 
     || RequestFactory.instance.getTimeout();
